@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Content Hub Gallery</title>
+<style>
+  /* Reset */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    margin: 0;
+    background: #fff;
+    color: #222;
+  }
+
+  /* Banner 16:9 */
+  .banner {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: url("https://i.postimg.cc/tJxx68jD/20250529-122538.jpg") center/cover no-repeat;
+  }
+
+  /* Profil bulat besar */
+  .profile-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0 10px 0;
+  }
+  .profile-container img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ff6600;
+    box-shadow: 0 0 10px rgba(255,102,0,0.5);
+  }
+
+  /* Content Hub */
+  .content-hub {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+  .content-hub .hub {
+    background-color: #ff6600;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 800;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  /* Search */
+  .search-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  #search {
+    padding: 8px 12px;
+    font-size: 1rem;
+    width: 250px;
+    max-width: 80vw;
+    border: 2px solid #ff6600;
+    border-radius: 25px 0 0 25px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  #search:focus {
+    border-color: #cc5200;
+  }
+  .search-container button {
+    background-color: #ff6600;
+    border: none;
+    padding: 9px 16px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 0 25px 25px 0;
+    transition: background-color 0.3s ease;
+  }
+  .search-container button:hover {
+    background-color: #cc5200;
+  }
+
+  /* Toggle Grid/List */
+  .toggle-view {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+  .toggle-view button {
+    padding: 6px 18px;
+    border: 2px solid #ff6600;
+    border-radius: 6px;
+    background: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .toggle-view button.active {
+    background-color: #ff6600;
+    color: white;
+    cursor: default;
+  }
+  .toggle-view button:hover:not(.active) {
+    background-color: #ff6600;
+    color: white;
+  }
+
+  /* Garis pembatas */
+  .separator {
+    border-bottom: 2px solid #ff6600;
+    margin: 0 15px 25px 15px;
+  }
+
+  /* Pagination */
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 10px 0;
+    gap: 8px;
+  }
+  .pagination-container button {
+    padding: 6px 14px;
+    background-color: white;
+    border: 2px solid #ff6600;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  .pagination-container button:hover:not(.active) {
+    background-color: #ff6600;
+    color: white;
+  }
+  .pagination-container button.active {
+    background-color: #ff6600;
+    color: white;
+    cursor: default;
+  }
+
+  /* Gallery Grid/List */
+  #gallery {
+    display: grid;
+    gap: 14px;
+    padding: 0 15px 30px 15px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+  #gallery.list {
+    display: block;
+    padding: 0 15px 30px 15px;
+  }
+
+  /* Item Gallery */
+  #gallery a.item {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    box-shadow: 0 1px 6px rgb(0 0 0 / 0.12);
+    border-radius: 10px;
+    overflow: hidden;
+    text-decoration: none;
+    color: #222;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+  }
+  #gallery a.item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 18px rgb(255 102 0 / 0.4);
+    z-index: 3;
+  }
+
+  #gallery a.item img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  #gallery.list a.item {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+  }
+  #gallery.list a.item img {
+    width: 160px;
+    height: 90px;
+    flex-shrink: 0;
+  }
+
+  .item-title {
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.2em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+  }
+
+  /* Nomor urut pada thumbnail */
+  .index-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #ff6600;
+    color: white;
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    user-select: none;
+    box-shadow: 0 0 6px rgba(255, 102, 0, 0.7);
+  }
+
+  /* Highlight pencarian */
+  .highlight {
+    background-color: #ffeb99;
+    border-radius: 3px;
+  }
+
+  /* Loading Spinner */
+  #loading {
+    text-align: center;
+    margin: 30px 0;
+  }
+  #loading .spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #ff6600;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px auto;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Responsive untuk tampilan mobile */
+  @media (max-width: 640px) {
+    #gallery {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    #gallery.list a.item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    #gallery.list a.item img {
+      width: 100%;
+      height: auto;
+    }
+    .profile-container img {
+      width: 100px;
+      height: 100px;
+    }
+    .content-hub {
+      font-size: 1.5rem;
+    }
+    #search {
+      width: 180px;
+    }
+    .search-container {
+      justify-content: center;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Banner -->
+  <div class="banner"></div>
+
+  <!-- Profil -->
+  <div class="profile-container">
+    <img src="https://i.postimg.cc/QN99n3zc/20250530-192134.jpg" alt="Profil" />
+  </div>
+
+  <!-- Content Hub -->
+  <div class="content-hub">
+    CONTENT <span class="hub">HUB</span>
+  </div>
+
+  <!-- Search dan Toggle -->
+  <div class="search-container">
+    <input type="search" id="search" placeholder="Cari judul..." aria-label="Cari konten" />
+    <button type="button" aria-label="Tombol cari" onclick="document.getElementById('search').dispatchEvent(new Event('input'))">Cari</button>
+  </div>
+  <div class="toggle-view" role="group" aria-label="Toggle tampilan galeri">
+    <button id="btnGrid" class="active" aria-pressed="true" aria-label="Tampilan grid">Grid</button>
+    <button id="btnList" aria-pressed="false" aria-label="Tampilan list">List</button>
+  </div>
+
+  <!-- Garis pembatas -->
+  <div class="separator"></div>
+
+  <!-- Pagination atas -->
+  <div id="paginationTop" class="pagination-container" aria-label="Navigasi halaman atas"></div>
+
+  <!-- Loading indicator -->
+  <div id="loading" role="status" aria-live="polite" style="display:none;">
+    <div class="spinner"></div>
+    Memuat data...
+  </div>
+
+  <!-- Gallery -->
+  <div id="gallery" aria-live="polite" aria-relevant="additions"></div>
+
+  <!-- Pagination bawah -->
+  <div id="pagination" class="pagination-container" aria-label="Navigasi halaman bawah"></div>
+
+<script>
+  const sheetId = "1qbgkQbiw1a9ZbLbpz7fMIPiu2lKQ18esdB9A3ShoaVM";
+  const sheetUrl = `https://opensheet.elk.sh/${sheetId}/Sheet1`;
+  const perPage = 20;
+  let data = [];
+  let filteredData = [];
+  let currentPage = 1;
+  let isGridView = true;
+
+  const gallery = document.getElementById('gallery');
+  const pagination = document.getElementById('pagination');
+  const paginationTop = document.getElementById('paginationTop');
+  const searchInput = document.getElementById('search');
+  const loading = document.getElementById('loading');
+  const btnGrid = document.getElementById('btnGrid');
+  const btnList = document.getElementById('btnList');
+
+  // Tampilkan loading saat ambil data
+  function showLoading(show) {
+    loading.style.display = show ? 'block' : 'none';
+  }
+
+  async function fetchData() {
+    showLoading(true);
+    try {
+      const res = await fetch(sheetUrl);
+      const json = await res.json();
+      data = json.reverse();
+      filteredData = data;
+      currentPage = 1;
+      showLoading(false);
+      render();
+    } catch (err) {
+      gallery.innerHTML = "<p style='text-align:center;color:#f00;'>Gagal mengambil data!</p>";
+      showLoading(false);
+      console.error(err);
+    }
+  }
+
+  // Escape HTML agar aman
+  function escapeHtml(text) {
+    return text.replace(/[&<>"']/g, (m) => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    })[m]);
+  }
+
+  // Highlight kata kunci pada judul
+  function highlight(text, query) {
+    if(!query) return escapeHtml(text);
+    const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    return escapeHtml(text).replace(re, '<span class="highlight">$1</span>');
+  }
+
+  function render() {
+    renderGallery();
+    renderPagination();
+  }
+
+  function renderGallery() {
+    gallery.className = isGridView ? "gallery" : "list gallery";
+    const start = (currentPage - 1) * perPage;
+    const end = start + perPage;
+    const pageItems = filteredData.slice(start, end);
+
+    if(pageItems.length === 0){
+      gallery.innerHTML = "<p style='text-align:center;opacity:0.6;'>Konten tidak ditemukan.</p>";
+      return;
+    }
+
+    const searchTerm = searchInput.value.toLowerCase().trim();
+
+    gallery.innerHTML = pageItems.map((item, index) => {
+      const indexGlobal = (currentPage - 1) * perPage + index + 1;
+      return `
+        <a href="${item.url}" target="_blank" rel="noopener" class="item" title="${escapeHtml(item.title)}">
+          <div class="index-badge">${indexGlobal}</div>
+          <img src="${item.thumbnail}" alt="${escapeHtml(item.title)}" loading="lazy" />
+          <div class="item-title">${highlight(item.title, searchTerm)}</div>
+        </a>
+      `;
+    }).join('');
+  }
+
+  function renderPagination() {
+    const totalPages = Math.ceil(filteredData.length / perPage);
+    if(totalPages <= 1){
+      pagination.innerHTML = "";
+      paginationTop.innerHTML = "";
+      return;
+    }
+    let buttons = "";
+    for(let i = 1; i <= totalPages; i++) {
+      buttons += `<button class="page-btn${i===currentPage ? " active" : ""}" onclick="goPage(${i})" aria-label="Halaman ${i}">${i}</button>`;
+    }
+    pagination.innerHTML = buttons;
+    paginationTop.innerHTML = buttons;
+  }
+
+  function goPage(page) {
+    if(page === currentPage) return;
+    currentPage = page;
+    render();
+  }
+
+  searchInput.addEventListener('input', () => {
+    const val = searchInput.value.toLowerCase().trim();
+    filteredData = data.filter(item => item.title.toLowerCase().includes(val));
+    currentPage = 1;
+    render();
+  });
+
+  btnGrid.addEventListener('click', () => {
+    if(isGridView) return;
+    isGridView = true;
+    btnGrid.classList.add('active');
+    btnGrid.setAttribute('aria-pressed', 'true');
+    btnList.classList.remove('active');
+    btnList.setAttribute('aria-pressed', 'false');
+    renderGallery();
+  });
+
+  btnList.addEventListener('click', () => {
+    if(!isGridView) return;
+    isGridView = false;
+    btnList.classList.add('active');
+    btnList.setAttribute('aria-pressed', 'true');
+    btnGrid.classList.remove('active');
+    btnGrid.setAttribute('aria-pressed', 'false');
+    renderGallery();
+  });
+
+  // Inisialisasi
+  fetchData();
+</script>
+
+</body>
+</html>
